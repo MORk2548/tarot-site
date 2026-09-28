@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เต็นท์ไพ่ทาโร่ของแม่หมอ</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600&family=Charm:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<div id="curtain"><div class="pn l"></div><div class="pn r"></div>
+<div id="enter"><h1>เต็นท์ไพ่ทาโร่</h1><p>ม่านกำลังรอให้คุณเปิดเข้าไป</p><button id="go">เปิดม่านเข้าเต็นท์</button></div></div>
+
+<main id="scene">
+<svg id="teller" viewBox="0 0 200 190" aria-label="แม่หมอสวมฮู้ดปิดหน้า">
+<defs><linearGradient id="cl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2f96"/><stop offset="1" stop-color="#1f0e3a"/></linearGradient>
+<radialGradient id="bl" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#c9b6ff"/><stop offset="1" stop-color="#5b36b0"/></radialGradient>
+<filter id="gw" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<path d="M12 190Q18 106 100 96Q182 106 188 190Z" fill="url(#cl)"/>
+<path d="M60 190Q100 122 140 190Z" fill="#160a2b"/>
+<path d="M40 112Q100 90 160 112" stroke="#f2c66d" stroke-width="2.5" fill="none"/>
+<g fill="#f2c66d"><circle cx="34" cy="150" r="2"/><circle cx="24" cy="172" r="1.5"/><circle cx="166" cy="146" r="2"/><circle cx="178" cy="172" r="1.5"/><circle cx="52" cy="128" r="1.5"/><circle cx="150" cy="130" r="1.5"/></g>
+<path d="M50 112Q30 38 100 10Q170 38 150 112Q126 94 100 98Q74 94 50 112Z" fill="#4a2680"/>
+<path d="M50 112Q30 38 100 10Q170 38 150 112" stroke="#f2c66d" stroke-width="2.5" fill="none"/>
+<path d="M70 98Q60 50 100 36Q140 50 130 98Q100 86 70 98Z" fill="#08030f"/>
+<circle cx="89" cy="68" r="9" fill="#ffd77a" opacity=".55" filter="url(#gw)" class="gl"/><circle cx="111" cy="68" r="9" fill="#ffd77a" opacity=".55" filter="url(#gw)" class="gl"/>
+<path d="M82 68Q89 62 96 68Q89 72 82 68Z" fill="#ffe7a8"/><path d="M104 68Q111 62 118 68Q111 72 104 68Z" fill="#ffe7a8"/>
+<path d="M72 80Q100 96 128 80Q128 98 100 106Q72 98 72 80Z" fill="#6a3fb0"/><path d="M72 80Q100 96 128 80" stroke="#f2c66d" stroke-width="1.5" fill="none"/>
+<path d="M100 24l4 7-4 7-4-7z" fill="#f2c66d"/>
+<ellipse cx="60" cy="152" rx="20" ry="13" fill="#2c1552" transform="rotate(-20 60 152)"/><ellipse cx="140" cy="152" rx="20" ry="13" fill="#2c1552" transform="rotate(20 140 152)"/>
+<circle cx="100" cy="150" r="30" fill="#b9a4ff" opacity=".35" filter="url(#gw)" class="gl"/>
+<circle cx="100" cy="150" r="24" fill="url(#bl)"/><path d="M84 152Q96 140 108 150T116 156" stroke="#fff" stroke-opacity=".55" stroke-width="2" fill="none"/>
+<ellipse cx="78" cy="160" rx="7" ry="5" fill="#d9b48f"/><ellipse cx="122" cy="160" rx="7" ry="5" fill="#d9b48f"/>
+</svg>
+<div id="bubble"></div>
+<section id="table"><div id="zone"></div></section>
+<div id="read" class="hide"></div>
+</main>
+
+<script src="script.js"></script></body></html>
