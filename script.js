@@ -35,7 +35,7 @@ let topic,N,deck,pick=[];
 const sf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 function say(t,o=[]){b.innerHTML="<p>"+t+"</p>";o.forEach(([l,f])=>{const x=document.createElement('button');x.textContent=l;x.onclick=f;b.append(x)})}
 function card(i,rev,face){const d=document.createElement('div');d.className='c'+(face?' flip':'');const c=C[i];d.innerHTML=`<div class="in"><div class="bk"></div><div class="fr${rev?' rv':''}" data-i="${i}"><img src="${IMG[i]}" alt="${c[0]}"></div></div>`;return d}
-function reset(){deck=sf([...C.keys()]);pick=[];zone.innerHTML='';rd.classList.add('hide');scrollTo({top:0,behavior:'smooth'});
+function reset(){deck=sf([...C.keys()]);pick=[];zone.innerHTML='';$('#rzone').innerHTML='';$('#readv').classList.remove('rd');rd.classList.add('hide');scrollTo({top:0,behavior:'smooth'});
  say("ยินดีต้อนรับ ลูกเอ๋ย… วันนี้อยากรู้เรื่องอะไรเป็นพิเศษ?",Object.entries(T).map(([k,v])=>[v[0],()=>{topic=k;ask()}]))}
 function ask(){say(`${T[topic][1]} ว่าไว้… ต้องการเปิดไพ่กี่ใบ?`,[[ "1 ใบ · คำตอบสั้น",1],["2 ใบ · สถานการณ์และแนวทาง",2],["3 ใบ · อดีต ปัจจุบัน อนาคต",3]].map(([l,n])=>[l,()=>{N=n;shuffle(1)}]))}
 function how(f){say(f?"ข้าสับไพ่ให้แล้ว… จะให้สับเพิ่ม หรือเจ้าจะตัดไพ่เอง? หรือวางไพ่ได้เลย":"สับเรียบร้อย ต่อไปจะทำอย่างไรดี?",[["🔀 สับอีกครั้ง",()=>shuffle()],["✂️ ตัดไพ่",cut],["🃏 วางไพ่เลย",spread]])}
@@ -44,8 +44,8 @@ function cut(){say("แตะกองไพ่ทีละกอง ตาม�
  ps.forEach((p,i)=>{const e=document.createElement('div');e.className='pile';e.innerHTML='<div class="stack"></div><span>กอง '+(i+1)+'</span>';for(let k=0;k<4;k++){const c=card(0);c.style.transform=`translate(${k*2}px,${-k*2}px)`;e.firstChild.append(c)}
   e.onclick=()=>{ord.push(i);e.classList.add('done');e.querySelector('span').textContent='ลำดับที่ '+ord.length;if(ord.length==3){deck=ord.flatMap(x=>ps[x]);say("ตัดไพ่เรียบร้อย ไพ่พร้อมแล้ว");setTimeout(spread,1000)}};
   zone.firstChild.append(e)})}
-function show(v,fh){['pick','cards'].forEach(k=>$('#'+k+'v').classList.toggle('hide',k!=v));document.body.style.overflow=v=='tent'?'':'hidden';if(!fh)location.hash=v=='tent'?'':v;$('#'+(v=='tent'?'scene':v+'v')).scrollTop=0}
-onhashchange=()=>{const h=location.hash.slice(1);show(h=='cards'?'cards':(h=='pick'&&N)?'pick':'tent',1)};
+function show(v,fh){['pick','cards','read'].forEach(k=>$('#'+k+'v').classList.toggle('hide',k!=v));document.body.style.overflow=v=='tent'?'':'hidden';if(!fh)location.hash=v=='tent'?'':v;$('#'+(v=='tent'?'scene':v+'v')).scrollTop=0}
+onhashchange=()=>{const h=location.hash.slice(1);show(h=='cards'?'cards':(h=='pick'&&N)?'pick':(h=='read'&&$('#rzone').firstChild)?'read':'tent',1)};
 function spread(){pick=[];const g=$('#pgrid');g.innerHTML='';
  const upd=()=>{$('#pcount').textContent=`เลือกแล้ว ${pick.length}/${N} ใบ`;$('#pgo').disabled=pick.length!=N;pick.forEach((c,k)=>c.querySelector('.badge').textContent=k+1)};
  deck.forEach(i=>{const c=card(i,Math.random()<.3);c.onclick=()=>{if(c.classList.contains('up')){pick=pick.filter(x=>x!=c);c.classList.remove('up');c.querySelector('.badge').remove()}else if(pick.length<N){pick.push(c);c.classList.add('up');const b=document.createElement('div');b.className='badge';c.append(b)}upd()};g.append(c)});
@@ -55,17 +55,18 @@ function buildCards(){$('#cgrid').innerHTML=C.map((c,i)=>`<article class="ci"><i
 buildCards();
 $('#bk').onclick=()=>show('cards');$('#cback').onclick=()=>show('tent');
 $('#pback').onclick=()=>{show('tent');how(0)};
-$('#pgo').onclick=()=>{arrange();show('tent')};
+$('#pgo').onclick=arrange;const hint=t=>$('#rhint').textContent=t;
+$('#rnew').onclick=()=>{reset();show('tent')};
 function arrange(){const cs=pick.map(c=>({i:+c.querySelector('.fr').dataset.i,rev:c.querySelector('.fr').classList.contains('rv')}));
- zone.innerHTML='<div class="row"></div>';let n=0;
+ const rz=$('#rzone');rz.innerHTML='<div class="row"></div>';rd.classList.add('hide');$('#readv').classList.remove('rd');let n=0;
  cs.forEach((x,k)=>{const d=card(x.i,x.rev);const l=document.createElement('div');l.className='lb';l.textContent=POS[N][k];d.append(l);
-  d.onclick=()=>{if(d.classList.contains('flip'))return;d.classList.add('flip');l.textContent=C[x.i][0]+" · "+POS[N][k];say(n+1<N?"อีก "+(N-n-1)+" ใบ แตะเพื่อเปิดต่อ":"เปิดครบแล้ว… ให้ข้าอ่านให้ฟัง");if(++n==N)setTimeout(()=>reading(cs),1200)};
-  zone.firstChild.append(d)});
- say("ไพ่ของเจ้าเรียงพร้อมแล้ว แตะที่ไพ่เพื่อเปิดทีละใบ")}
+  d.onclick=()=>{if(d.classList.contains('flip'))return;d.classList.add('flip');l.textContent=C[x.i][0]+" · "+POS[N][k];hint(n+1<N?"อีก "+(N-n-1)+" ใบ แตะเพื่อเปิดต่อ":"เปิดครบแล้ว… ให้ข้าอ่านให้ฟัง");if(++n==N)setTimeout(()=>reading(cs),1200)};
+  rz.firstChild.append(d)});
+ hint("ไพ่ของเจ้าเรียงพร้อมแล้ว แตะที่ไพ่เพื่อเปิดทีละใบ");show('read')}
 function reading(cs){let s=0,h=`<h2>คำทำนาย · ${T[topic][1]}</h2>`;
  cs.forEach((x,k)=>{const c=C[x.i];s+=c[2]*(x.rev?-1:1);h+=`<p><b>${POS[N][k]} — ${c[1]} ${c[0]}${x.rev?' (ไพ่กลับหัว)':''}</b><br>${topic=='aim'?AIM[x.i][+x.rev]:(x.rev?c[4]:c[3])}</p>`});
  const t=s>0?0:s<0?2:1;h+=`<p class="s">สรุป: ${V[topic][t]}</p><small>ไพ่ทาโร่ใช้เพื่อความบันเทิงและเป็นแรงบันดาลใจ ไม่ใช่คำตัดสินอนาคต</small>`;
- rd.innerHTML=h;rd.classList.remove('hide');rd.scrollIntoView({behavior:'smooth',block:'start'});
- say("นี่คือสิ่งที่ไพ่บอก ขอให้โชคดีนะลูกเอ๋ย",[["🔮 ดูดวงใหม่",reset]])}
+ rd.innerHTML=h;rd.classList.remove('hide');rd.scrollTop=0;$('#readv').classList.add('rd');
+ hint("นี่คือสิ่งที่ไพ่บอก ขอให้โชคดีนะลูกเอ๋ย")}
 $('#go').onclick=()=>{$('#curtain').classList.add('open');reset();setTimeout(()=>$('#curtain').style.display='none',2600)};
 reset();
