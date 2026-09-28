@@ -44,9 +44,18 @@ function cut(){say("แตะกองไพ่ทีละกอง ตาม�
  ps.forEach((p,i)=>{const e=document.createElement('div');e.className='pile';e.innerHTML='<div class="stack"></div><span>กอง '+(i+1)+'</span>';for(let k=0;k<4;k++){const c=card(0);c.style.transform=`translate(${k*2}px,${-k*2}px)`;e.firstChild.append(c)}
   e.onclick=()=>{ord.push(i);e.classList.add('done');e.querySelector('span').textContent='ลำดับที่ '+ord.length;if(ord.length==3){deck=ord.flatMap(x=>ps[x]);say("ตัดไพ่เรียบร้อย ไพ่พร้อมแล้ว");setTimeout(spread,1000)}};
   zone.firstChild.append(e)})}
-function spread(){pick=[];zone.innerHTML='<div class="fan"></div>';const f=zone.firstChild;
- const upd=()=>say(`ใจเรียกหาใบไหน แตะเลือกได้ ${N} ใบ (เลือกแล้ว ${pick.length}/${N})`);upd();
- deck.forEach(i=>{const c=card(i,Math.random()<.3);c.onclick=()=>{if(c.classList.contains('up')||pick.length>=N)return;pick.push(c);c.classList.add('up');const g=document.createElement('div');g.className='badge';g.textContent=pick.length;c.append(g);upd();if(pick.length==N)setTimeout(arrange,900)};f.append(c)})}
+function show(v,fh){['pick','cards'].forEach(k=>$('#'+k+'v').classList.toggle('hide',k!=v));document.body.style.overflow=v=='tent'?'':'hidden';if(!fh)location.hash=v=='tent'?'':v;$('#'+(v=='tent'?'scene':v+'v')).scrollTop=0}
+onhashchange=()=>{const h=location.hash.slice(1);show(h=='cards'?'cards':(h=='pick'&&N)?'pick':'tent',1)};
+function spread(){pick=[];const g=$('#pgrid');g.innerHTML='';
+ const upd=()=>{$('#pcount').textContent=`เลือกแล้ว ${pick.length}/${N} ใบ`;$('#pgo').disabled=pick.length!=N;pick.forEach((c,k)=>c.querySelector('.badge').textContent=k+1)};
+ deck.forEach(i=>{const c=card(i,Math.random()<.3);c.onclick=()=>{if(c.classList.contains('up')){pick=pick.filter(x=>x!=c);c.classList.remove('up');c.querySelector('.badge').remove()}else if(pick.length<N){pick.push(c);c.classList.add('up');const b=document.createElement('div');b.className='badge';c.append(b)}upd()};g.append(c)});
+ upd();show('pick')}
+const EN=["The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant","The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man","Death","Temperance","The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"],TG={1:"พลังบวก","0":"กลาง ๆ","-1":"ต้องระวัง"};
+function buildCards(){$('#cgrid').innerHTML=C.map((c,i)=>`<article class="ci"><img src="${IMG[i]}" alt="${EN[i]}" loading="lazy"><div><h3>${i} · ${c[1]} ${c[0]}<span class="tag tg${c[2]}">${TG[c[2]]}</span></h3><small>${EN[i]}</small><p><b>ไพ่ปกติ:</b> ${c[3]}</p><p><b>ไพ่กลับหัว:</b> ${c[4]}</p><p>🎯 <b>Aim Valo:</b> ${AIM[i][0]} <small>(กลับหัว: ${AIM[i][1]})</small></p></div></article>`).join('')}
+buildCards();
+$('#bk').onclick=()=>show('cards');$('#cback').onclick=()=>show('tent');
+$('#pback').onclick=()=>{show('tent');how(0)};
+$('#pgo').onclick=()=>{arrange();show('tent')};
 function arrange(){const cs=pick.map(c=>({i:+c.querySelector('.fr').dataset.i,rev:c.querySelector('.fr').classList.contains('rv')}));
  zone.innerHTML='<div class="row"></div>';let n=0;
  cs.forEach((x,k)=>{const d=card(x.i,x.rev);const l=document.createElement('div');l.className='lb';l.textContent=POS[N][k];d.append(l);
