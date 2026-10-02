@@ -1,4 +1,5 @@
 const IMG=Array.from({length:22},(_,i)=>`images/cards/${String(i).padStart(2,'0')}.jpg`);
+const setVh=()=>document.documentElement.style.setProperty('--vh',innerHeight*.01+'px');addEventListener('resize',setVh);addEventListener('orientationchange',setVh);setVh();
 const $=s=>document.querySelector(s),b=$('#bubble'),zone=$('#zone'),rd=$('#read');
 const C=[
 ["ผู้เริ่มต้น","🃏",1,"การเริ่มต้นใหม่ กล้าลองสิ่งที่ไม่เคยทำ ความบริสุทธิ์ใจนำพาโอกาสมาให้","ประมาท ตัดสินใจเร็วเกินไป ควรมองให้รอบก่อนก้าว"],
