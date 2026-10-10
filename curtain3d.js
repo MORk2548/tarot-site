@@ -3,12 +3,12 @@
 (function(){try{
 const T=window.THREE,cv=document.getElementById('cc');if(!T||!cv)return;
 const r=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
-r.setClearColor(0,0);r.setPixelRatio(Math.min(devicePixelRatio,2));
+r.setClearColor(0,0);r.setPixelRatio(Math.min(devicePixelRatio,innerWidth<760?1.5:2));
 const sc=new T.Scene(),cam=new T.PerspectiveCamera(40,1,.1,50);cam.position.z=10;
 sc.add(new T.AmbientLight(0xffffff,.55));
 const d1=new T.DirectionalLight(0xffffff,.6);d1.position.set(-2,3,6);sc.add(d1);
 const mat=new T.MeshPhongMaterial({vertexColors:true,specular:0x442a26,shininess:20,side:T.DoubleSide,transparent:true});
-const NU=64,NV=40,G=new T.Group();sc.add(G);
+const LO=innerWidth<760||(navigator.hardwareConcurrency||8)<=4,NU=LO?40:64,NV=LO?26:40,G=new T.Group();sc.add(G);
 const sides=[-1,1].map(s=>{const g=new T.PlaneGeometry(1,1,NU,NV);
  g.setAttribute('color',new T.BufferAttribute(new Float32Array((NU+1)*(NV+1)*3),3));G.add(new T.Mesh(g,mat));return{g,s}});
 const rod=new T.Mesh(new T.CylinderGeometry(.07,.07,1,16).rotateZ(Math.PI/2),new T.MeshBasicMaterial({color:0xd9b25a,transparent:true}));sc.add(rod);

@@ -2,7 +2,7 @@
 (function(){try{
 const T=window.THREE;if(!T)return;
 const cv=document.getElementById('gl'),r=new T.WebGLRenderer({canvas:cv,antialias:true});
-r.setPixelRatio(Math.min(devicePixelRatio,2));
+r.setPixelRatio(Math.min(devicePixelRatio,innerWidth<760?1.5:2));
 const sc=new T.Scene();sc.background=new T.Color(0x120820);sc.fog=new T.Fog(0x120820,11,26);
 const cam=new T.PerspectiveCamera(48,1,.1,60);
 const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o));
@@ -57,6 +57,7 @@ function fit(){const w=innerWidth,h=innerHeight,a=w/h,p=Math.max(0,1-a);r.setSiz
 addEventListener('resize',fit);fit();
 const t0=performance.now();
 (function loop(){requestAnimationFrame(loop);
+ if(document.body.classList.contains('ovopen'))return;
  const t=(performance.now()-t0)/1000;cx+=(mx-cx)*.04;boost*=.985;
  cam.position.set(cx*1.6,3.4,base.z);cam.lookAt(0,base.ly,.5);
  tl.position.y=Math.sin(t*1.2)*.03;head.rotation.y=cx*.7;

@@ -1,7 +1,8 @@
-:root{--cw:clamp(52px,min(15vw,11vh),110px);--rw:clamp(76px,min(26vw,20vh),138px);--gold:#f2c66d;--ink:#1c1030;--plum:#3a1c5e;--red:#8e1b2f;--wood:#5a3620;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--cw:clamp(52px,min(15vw,11vh),140px);--rw:clamp(76px,min(26vw,20vh),180px);--gold:#f2c66d;--ink:#1c1030;--plum:#3a1c5e;--red:#8e1b2f;--wood:#5a3620;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{height:100%}
+html{font-size:clamp(14px,.5vw + 11px,20px)}
 body{margin:0;background:var(--ink);color:#fff;font-family:'Mali','Sarabun',sans-serif;overflow-x:hidden}
 #scene{height:100vh;height:100dvh;height:calc(var(--vh,1vh)*100);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at 50% 15%,#5b2d8a 0,#2a1349 45%,#150a26 100%);position:relative;overflow-y:auto}
 #scene:before{content:"";position:absolute;inset:0 0 auto;height:60px;background:repeating-linear-gradient(90deg,var(--red) 0 40px,#c9a24a 40px 80px);clip-path:polygon(0 0,100% 0,100% 55%,95% 100%,90% 55%,85% 100%,80% 55%,75% 100%,70% 55%,65% 100%,60% 55%,55% 100%,50% 55%,45% 100%,40% 55%,35% 100%,30% 55%,25% 100%,20% 55%,15% 100%,10% 55%,5% 100%,0 55%)}
@@ -127,3 +128,9 @@ body.cur3d.cfade #cc{opacity:0}
 
 #cfil{display:flex;flex-wrap:wrap;gap:8px;max-width:1100px;margin:14px auto 0}
 #cfil .pill.on{background:var(--gold);color:var(--ink)}
+
+/* มือถือ/จอสัมผัส: ย้ายปุ่มความหมายไพ่ลงมุมขวาล่าง ให้นิ้วโป้งกดง่าย */
+@media (max-width:760px),(pointer:coarse){
+#tools{position:fixed;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:calc(14px + env(safe-area-inset-right,0px))}
+#tools .pill{min-height:46px;padding:10px 18px;font-size:1rem;background:#1c1030f2;box-shadow:0 4px 14px #000b}
+}

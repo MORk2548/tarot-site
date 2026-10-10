@@ -1,4 +1,4 @@
-const IMG=Array.from({length:78},(_,i)=>`images/cards/${String(i).padStart(2,'0')}.jpg`);
+const IMG=Array.from({length:78},(_,i)=>`images/cards/${String(i).padStart(2,'0')}.webp`);
 const setVh=()=>document.documentElement.style.setProperty('--vh',innerHeight*.01+'px');addEventListener('resize',setVh);addEventListener('orientationchange',setVh);setVh();
 document.querySelectorAll('.pn').forEach((p,k)=>{const n=12;for(let i=0;i<n;i++){const e=document.createElement('i');e.style.cssText=`--k:${k?i:n-1-i};--d:${k?1:-1};--h:${Math.round(10+9*Math.sin(i*1.3+k*2))}px`;p.append(e)}});
 const $=s=>document.querySelector(s),b=$('#bubble'),zone=$('#zone'),rd=$('#read');
@@ -43,23 +43,25 @@ let topic,N,deck,pick=[];
 const sf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 function say(t,o=[],back){b.innerHTML="<p>"+t+"</p>";o.forEach(([l,f])=>{const x=document.createElement('button');x.textContent=l;x.onclick=f;b.append(x)});
  if(back){b.append(document.createElement('br'));const x=document.createElement('button');x.className='back';x.textContent='← ย้อนกลับ';x.onclick=back;b.append(x)}}
-const stack=()=>{zone.innerHTML='<div class="stack"></div>';for(let i=0;i<9;i++)zone.firstChild.append(card(0))};
-function card(i,rev,face){const d=document.createElement('div');d.className='c'+(face?' flip':'');const c=C[i];d.innerHTML=`<div class="in"><div class="bk"></div><div class="fr${rev?' rv':''}" data-i="${i}"><img src="${IMG[i]}" alt="${c[0]}"></div></div>`;return d}
+const stack=()=>{zone.innerHTML='<div class="stack"></div>';for(let i=0;i<9;i++)zone.firstChild.append(card(0,0,0,1))};
+function card(i,rev,face,lite){const d=document.createElement('div');d.className='c'+(face?' flip':'');const c=C[i];d.innerHTML=`<div class="in"><div class="bk"></div><div class="fr${rev?' rv':''}" data-i="${i}">${lite?'':`<img src="${IMG[i]}" alt="${c[0]}">`}</div></div>`;return d}
 function reset(){deck=sf([...C.keys()]);pick=[];zone.innerHTML='';$('#rzone').innerHTML='';$('#readv').classList.remove('rd');rd.classList.add('hide');scrollTo({top:0,behavior:'smooth'});
  say("ยินดีต้อนรับ ลูกเอ๋ย… วันนี้อยากรู้เรื่องอะไรเป็นพิเศษ?",Object.entries(T).map(([k,v])=>[v[0],()=>{topic=k;ask()}]))}
 function ask(){say(`${T[topic][1]} ว่าไว้… ต้องการเปิดไพ่กี่ใบ?`,[[ "1 ใบ · คำตอบสั้น",1],["2 ใบ · สถานการณ์และแนวทาง",2],["3 ใบ · อดีต ปัจจุบัน อนาคต",3]].map(([l,n])=>[l,()=>{N=n;shuffle(1)}]),reset)}
 function how(f){say(f?"ข้าสับไพ่ให้แล้ว… จะให้สับเพิ่ม หรือเจ้าจะตัดไพ่เอง? หรือวางไพ่ได้เลย":"สับเรียบร้อย ต่อไปจะทำอย่างไรดี?",[["🔀 สับอีกครั้ง",()=>shuffle()],["✂️ ตัดไพ่",cut],["🃏 วางไพ่เลย",spread]],()=>{zone.innerHTML='';ask()})}
-function shuffle(f){window.tentFx&&tentFx();say(f?"ข้าจะสับไพ่ให้ก่อน… ตั้งจิตนึกถึงเรื่องที่อยากรู้นะ":"กำลังสับไพ่อีกรอบ…");zone.innerHTML='<div class="stack sh"></div>';const s=zone.firstChild;for(let i=0;i<9;i++)s.append(card(0));deck=sf(deck);setTimeout(()=>how(f),3000)}
+function shuffle(f){window.tentFx&&tentFx();say(f?"ข้าจะสับไพ่ให้ก่อน… ตั้งจิตนึกถึงเรื่องที่อยากรู้นะ":"กำลังสับไพ่อีกรอบ…");zone.innerHTML='<div class="stack sh"></div>';const s=zone.firstChild;for(let i=0;i<9;i++)s.append(card(0,0,0,1));deck=sf(deck);setTimeout(()=>how(f),3000)}
 function cut(){say("แตะกองไพ่ทีละกอง ตามลำดับที่เจ้าต้องการ กองที่แตะก่อนจะขึ้นบนสุด",[],()=>{stack();how()});zone.innerHTML='<div class="piles"></div>';const ps=[deck.slice(0,7),deck.slice(7,14),deck.slice(14)],ord=[];
- ps.forEach((p,i)=>{const e=document.createElement('div');e.className='pile';e.innerHTML='<div class="stack"></div><span>กอง '+(i+1)+'</span>';for(let k=0;k<4;k++){const c=card(0);c.style.transform=`translate(${k*2}px,${-k*2}px)`;e.firstChild.append(c)}
+ ps.forEach((p,i)=>{const e=document.createElement('div');e.className='pile';e.innerHTML='<div class="stack"></div><span>กอง '+(i+1)+'</span>';for(let k=0;k<4;k++){const c=card(0,0,0,1);c.style.transform=`translate(${k*2}px,${-k*2}px)`;e.firstChild.append(c)}
   e.onclick=()=>{ord.push(i);e.classList.add('done');e.querySelector('span').textContent='ลำดับที่ '+ord.length;if(ord.length==3){deck=ord.flatMap(x=>ps[x]);say("ตัดไพ่เรียบร้อย ไพ่พร้อมแล้ว");setTimeout(spread,1000)}};
   zone.firstChild.append(e)})}
-function show(v,fh){['pick','cards','read'].forEach(k=>$('#'+k+'v').classList.toggle('hide',k!=v));document.body.style.overflow=v=='tent'?'':'hidden';if(!fh)location.hash=v=='tent'?'':v;$('#'+(v=='tent'?'scene':v+'v')).scrollTop=0}
+function show(v,fh){['pick','cards','read'].forEach(k=>$('#'+k+'v').classList.toggle('hide',k!=v));document.body.style.overflow=v=='tent'?'':'hidden';document.body.classList.toggle('ovopen',v!='tent');if(!fh)location.hash=v=='tent'?'':v;$('#'+(v=='tent'?'scene':v+'v')).scrollTop=0}
 onhashchange=()=>{const h=location.hash.slice(1);show(h=='cards'?'cards':(h=='pick'&&N)?'pick':(h=='read'&&$('#rzone').firstChild)?'read':'tent',1)};
 function spread(){pick=[];const g=$('#pgrid');g.innerHTML='';
  const upd=()=>{$('#pcount').textContent=`เลือกแล้ว ${pick.length}/${N} ใบ`;$('#pgo').disabled=pick.length!=N;pick.forEach((c,k)=>c.querySelector('.badge').textContent=k+1)};
- deck.forEach(i=>{const c=card(i,Math.random()<.3);c.onclick=()=>{if(c.classList.contains('up')){pick=pick.filter(x=>x!=c);c.classList.remove('up');c.querySelector('.badge').remove()}else if(pick.length<N){pick.push(c);c.classList.add('up');const b=document.createElement('div');b.className='badge';c.append(b)}upd()};g.append(c)});
- upd();show('pick')}
+ deck.forEach(i=>{const c=card(i,Math.random()<.3,0,1);c.onclick=()=>{if(c.classList.contains('up')){pick=pick.filter(x=>x!=c);c.classList.remove('up');c.querySelector('.badge').remove()}else if(pick.length<N){pick.push(c);c.classList.add('up');const b=document.createElement('div');b.className='badge';c.append(b)}upd()};g.append(c)});
+ upd();show('pick');fitPick()}
+function fitPick(){if($('#pickv').classList.contains('hide'))return;const W=Math.min(900,innerWidth-24),g=10,H=innerHeight-190;let b=46;for(let w=112;w>=46;w-=2){const k=Math.floor((W+g)/(w+g)),r=Math.ceil(C.length/k);if(r*(w*1.66+g)<=H){b=w;break}}$('#pickv').style.setProperty('--pk',b+'px');$('#pgrid').style.gap=g+'px'}
+addEventListener('resize',fitPick);
 const EN=["The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant","The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man","Death","Temperance","The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"],TG={1:"พลังบวก","0":"กลาง ๆ","-1":"ต้องระวัง"};
 MS.forEach((s,k)=>ME.forEach(n=>EN.push(n+' of '+MSE[k])));
 const grp=i=>i<22?'major':String((i-22)/14|0);
