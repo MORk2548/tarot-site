@@ -36,8 +36,8 @@ body{margin:0;background:var(--ink);color:#fff;font-family:'Mali','Sarabun',sans
 .row .c{margin-bottom:26px;position:relative}
 .stack{position:relative;width:var(--cw);height:calc(var(--cw)*1.66)}
 .stack .c{position:absolute;left:0;top:0}
-.sh .c:nth-child(odd){animation:l 1.9s ease-in-out infinite}
-.sh .c:nth-child(even){animation:r 1.9s ease-in-out infinite}
+.sh .c:nth-child(odd){animation:l 1.2s ease-in-out 2}
+.sh .c:nth-child(even){animation:r 1.2s ease-in-out 2}
 .sh .c:nth-child(3n){animation-delay:.25s}.sh .c:nth-child(3n+1){animation-delay:.5s}
 @keyframes l{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(calc(var(--cw)*-.9),-12px) rotate(-14deg)}60%{transform:translate(-10px,6px) rotate(4deg)}}
 @keyframes r{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(calc(var(--cw)*.9),-12px) rotate(14deg)}60%{transform:translate(10px,6px) rotate(-4deg)}}
@@ -56,9 +56,14 @@ body{margin:0;background:var(--ink);color:#fff;font-family:'Mali','Sarabun',sans
 .hide{display:none}
 #curtain{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:auto;padding-top:env(safe-area-inset-top,0px)}
 #curtain.open{pointer-events:none}
-.pn{position:absolute;top:0;bottom:0;width:50.5%;background:repeating-linear-gradient(90deg,#7a1226 0 26px,#a32036 26px 46px,#5e0d1d 46px 60px);box-shadow:inset 0 -60px 60px #0006;transition:transform 2.4s cubic-bezier(.6,.05,.3,1)}
-.pn.l{left:0;border-right:3px solid #d9b25a}.pn.r{right:0;border-left:3px solid #d9b25a}
-#curtain.open .l{transform:translateX(-102%)}#curtain.open .r{transform:translateX(102%)}
+.pn{position:absolute;top:0;bottom:0;width:50.5%;display:flex;align-items:flex-start;transition:transform 2.8s cubic-bezier(.55,.05,.2,1) .1s;filter:drop-shadow(0 8px 14px #000a)}
+.pn i{flex:1;height:calc(100% - var(--h));background:linear-gradient(90deg,#4a0a16 0,#a32036 36%,#d04058 50%,#8e1b2f 64%,#4a0a16 100%);box-shadow:inset 0 -40px 40px #0007;transform-origin:50% 0;animation:idle 5s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.4s)}
+@keyframes idle{from{transform:skewX(-1.4deg)}to{transform:skewX(1.4deg) translateY(3px)}}
+@keyframes rip{0%{transform:skewX(0)}25%{transform:skewX(calc(var(--d)*7deg)) translateY(12px)}55%{transform:skewX(calc(var(--d)*-5deg)) translateY(-6px)}100%{transform:skewX(calc(var(--d)*2deg)) translateY(0)}}
+.rod{position:absolute;top:0;left:0;right:0;height:14px;z-index:3;background:linear-gradient(#fff3c4,#d9b25a 45%,#7a5a1c);box-shadow:0 4px 8px #000a;transition:opacity .6s 2s}
+.pn.l{left:0;transform-origin:0 50%}.pn.r{right:0;transform-origin:100% 50%}
+#curtain.open .pn{transform:scaleX(.08)}#curtain.open .pn i{animation:rip 2.4s ease-in-out both;animation-delay:calc(var(--k)*70ms)}#curtain.open .rod{opacity:0}
+#curtain.open{opacity:0;transition:opacity .8s 2.6s}
 #enter{position:relative;z-index:2;text-align:center;transition:opacity .5s}
 #curtain.open #enter{opacity:0}
 #enter h1{font-family:'Charm',serif;font-size:clamp(2.2rem,9vw,3.6rem);margin:0;color:var(--gold);text-shadow:0 3px 0 #000a,0 0 24px #f2c66d88}
@@ -101,3 +106,21 @@ body{margin:0;background:var(--ink);color:#fff;font-family:'Mali','Sarabun',sans
 #readv.rd #rzone{padding-top:14px}
 #readv #read{flex:1 1 auto;min-height:0;overflow:auto;width:min(680px,100%);margin:4px auto calc(12px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.pn{transition-duration:.3s}}
+
+/* โหมดฉาก 3D (เปิดเมื่อ WebGL ใช้ได้) */
+#gl{display:none}
+body.g3 #gl{display:block;position:fixed;inset:0;width:100%;height:100%;z-index:0}
+body.g3 #scene{background:transparent;position:relative;z-index:1}
+body.g3 #scene:before,body.g3 #teller,body.g3 #bubble:before{display:none}
+body.g3 #bubble{margin-top:66px}
+body.g3 #table{background:none;border:0;box-shadow:none;margin-top:0;justify-content:flex-end;padding-bottom:3vh}
+body.g3 #zone{transform:perspective(800px) rotateX(24deg);transform-origin:50% 100%}
+
+/* ม่าน 3D (ถ้า WebGL ใช้ได้) */
+#cc{display:none}
+body.cur3d #cc{display:block;position:fixed;inset:0;width:100%;height:100%;z-index:19;pointer-events:none;transition:opacity .8s}
+body.cur3d #curtain .pn,body.cur3d #curtain .rod{display:none}
+body.cur3d.cfade #cc{opacity:0}
+
+#bubble button.back{background:transparent;border:2px dashed #b9a4d6;color:#7a5a8a;min-height:34px;margin-top:6px;font-size:.9em}
+#bubble button.back:hover,#bubble button.back:focus-visible{background:#7a5a8a;color:#fff;border-style:solid}
