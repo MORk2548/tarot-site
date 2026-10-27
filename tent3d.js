@@ -9,7 +9,7 @@ const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o
 const B=c=>new T.MeshBasicMaterial({color:c});
 const add=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(p||sc).add(o);return o};
 const GOLD=0xf2c66d;
-// เต็นท์ลายแถบแดงทอง
+// เต็นท์
 const c2=document.createElement('canvas');c2.width=512;c2.height=8;const g=c2.getContext('2d');
 for(let i=0;i<16;i++){g.fillStyle=i%2?'#c9a24a':'#7a1226';g.fillRect(i*32,0,32,8)}
 const st=new T.CanvasTexture(c2);st.wrapS=T.RepeatWrapping;
