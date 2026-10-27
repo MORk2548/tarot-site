@@ -17,7 +17,7 @@ let visH=7.28,start=-1,done=null,end=false;
 function upd(o,time,tt){const P=o.g.attributes.position,C=o.g.attributes.color;let k=0;
  for(let iy=0;iy<=NV;iy++){const v=iy/NV;for(let ix=0;ix<=NU;ix++,k++){const u=ix/NU;
   const er=cl((tt-.3*(1-v)-.2*(1-u))/2.6),e=er*er*(3-2*er),sn=Math.sin(Math.PI*e);
-  // ท่าสุดท้าย: ผ้ารวบเป็นพัดที่มุมบนด้านนอก (จุดรวมอยู่ล่างขอบจอ) เส้นจีบแผ่ออกจากจุดนั้น
+  // ยกม่าน
   const xo=1-(1-v)*.61*(1-u);
   const x=L(u,xo,e)-sn*.07*v*(1-u)*(1-u);
   const y=L(1.03-2.06*v,1.03-1.73*v,e)+sn*.05*v;
@@ -35,7 +35,7 @@ function finish(){if(end)return;end=true;setTimeout(()=>{try{r.dispose()}catch(e
 (function loop(){if(end)return;requestAnimationFrame(loop);
  try{const time=(performance.now()-t0)/1000,tt=start<0?-1:(performance.now()-start)/1000;
  sides.forEach(o=>upd(o,time,tt));
- const q=cl((tt-3.3)/.9),lift=q*q;           // หลังรวบเสร็จ ดึงผ้าขึ้นออกจากจอ
+ const q=cl((tt-3.3)/.9),lift=q*q;           // ม่านหาย
  G.position.y=lift*visH*.9;mat.opacity=1-cl((tt-3.5)/.7);
  rod.material.opacity=1-cl((tt-.1)/.6);rod.visible=rod.material.opacity>.01;
  if(tt>4.3)return finish();
