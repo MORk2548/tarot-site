@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tarot-site.2548zaadike.workers.dev/sitemap.xml
