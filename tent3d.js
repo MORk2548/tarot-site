@@ -62,11 +62,30 @@
         const fOpen = face(0), fShut = face(1);
         const fm = new T.MeshStandardMaterial({ map: fOpen, emissive: 0xffffff, emissiveMap: fOpen, emissiveIntensity: .08, roughness: .75 });
         const fc = add(new T.SphereGeometry(.5, 48, 32), fm, 0, 0, 0, head); fc.scale.set(.95, 1, .92);
-        const hair = M(0xc8b4ff, { roughness: .45, metalness: .1 });
-        add(new T.SphereGeometry(.53, 32, 20), hair, 0, .04, -.16, head).scale.set(1.02, 1.04, 1);
-        add(new T.SphereGeometry(.535, 40, 16, 0, Math.PI * 2, 0, Math.PI * .37), hair, 0, .04, .03, head).scale.set(.98, 1, 1);
-        [-1, 1].forEach(s => { const lk = add(new T.CylinderGeometry(.1, .05, 1.05, 12), hair, s * .4, -.45, .18, head); lk.rotation.z = s * .08 });
-        add(new T.CylinderGeometry(.42, .62, 1.6, 24), hair, 0, -.8, -.28, head);
+        // ผม: ปอยผมแต่ละปอยเป็นท่อเรียวตามเส้นโค้ง ลงเงาแบบการ์ตูน (toon) ให้ดูเป็นอนิเมะ
+        const tg = new T.DataTexture(new Uint8Array([45, 105, 170]), 3, 1, T.LuminanceFormat); tg.minFilter = tg.magFilter = T.NearestFilter; tg.needsUpdate = true;
+        const hair = new T.MeshToonMaterial({ color: 0xa88cf0, gradientMap: tg }), sway = [];
+        add(new T.SphereGeometry(.53, 32, 20), hair, 0, .04, -.14, head).scale.set(1.02, 1.04, 1);
+        function lock(pts, r0, sw) {
+            const p = pts.map(a => new T.Vector3(...a)), o = p[0].clone(); p.forEach(v => v.sub(o));
+            const c = new T.CatmullRomCurve3(p), S = 20, R = 8, g = new T.TubeGeometry(c, S, 1, R, false), P = g.attributes.position, v = new T.Vector3();
+            for (let i = 0; i <= S; i++) { const q = c.getPointAt(i / S), k = r0 * Math.pow(1 - i / S, .8) + .003; for (let j = 0; j <= R; j++) { const n = i * (R + 1) + j; v.fromBufferAttribute(P, n).sub(q).multiplyScalar(k).add(q); P.setXYZ(n, v.x, v.y, v.z) } }
+            g.computeVertexNormals(); const m = add(g, hair, o.x, o.y, o.z, head); if (sw) sway.push([m, sw]); return m
+        }
+        const zf = (x, y) => Math.sqrt(Math.max(.01, .28 - x * x - y * y)) * .95;
+        [-.38, -.26, -.13, 0, .13, .26, .38].forEach((x, i) => {
+            const ty = .14 - Math.abs(x) * .45 + (i % 2) * .04;
+            lock([[x * .5, .5, zf(x * .5, .5) - .06], [x * .9, .38, zf(x * .9, .38) + .03], [x, .26, zf(x, .26) + .05], [x * 1.04, ty, zf(x, ty) + .04]], .075)
+        });
+        [-1, 1].forEach(s => {
+            lock([[s * .4, .28, .1], [s * .5, -.1, .18], [s * .5, -.5, .2], [s * .43, -.92, .24]], .085, s * .04);
+            lock([[s * .36, .12, -.08], [s * .56, -.45, .25], [s * .56, -.85, .7], [s * .48, -1.32, .82]], .11, s * .03);
+            const pin = add(new T.OctahedronGeometry(.045), gold, s * .52, .1, .22, head); pin.scale.set(1, 1.4, .6)
+        });
+        for (let i = 0; i < 11; i++) {
+            const a = Math.PI * (.55 + .9 * i / 10), sx = Math.sin(a), cz = Math.cos(a);
+            lock([[sx * .38, .38, cz * .38 - .1], [sx * .6, -.25, cz * .58 - .1], [sx * .68, -.9, cz * .62 - .1], [sx * .62, -1.5, cz * .6 - .1]], .15, .02)
+        }
         const hood = M(0x3b1d72, { roughness: .6, side: T.DoubleSide });
         add(lathe([[0, 1.08], [.22, .95], [.48, .68], [.64, .3], [.68, -.08], [.7, -.42], [.9, -.72]], .9, Math.PI * 2 - 1.8), hood, 0, 0, -.06, head);
         add(lathe([[.66, .3], [.7, -.08], [.72, -.42], [.92, -.72]], .9, .12), gold, 0, 0, -.04, head);
@@ -120,6 +139,7 @@
             const k = 1 - (intro < 0 ? 0 : io(Math.min(1, (now - intro) / 3200)));
             cam.position.set(cx * 1.6 + k * 1.2, 3.4 + k * 2.2, base.z + k * 5); cam.lookAt(0, base.ly + k * .6, .5);
             tl.position.y = Math.sin(t * 1.2) * .03; head.rotation.y = cx * .7; head.rotation.z = Math.sin(t * .8) * .04;
+            sway.forEach(([m, a], i) => { m.rotation.z = Math.sin(t * 1.3 + i * .7) * a; m.rotation.x = Math.sin(t * .9 + i) * Math.abs(a) * .6 });
             const shut = t % 4.2 < .13; if ((fm.map === fShut) !== shut) { fm.map = fm.emissiveMap = shut ? fShut : fOpen; fm.needsUpdate = true }
             hands.forEach(([h, p], i) => h.position.set(p.x + Math.sin(t * 1.6 + i * 3) * .03, p.y + Math.sin(t * 2 + i) * .05, p.z));
             ball.material.emissiveIntensity = .8 + Math.sin(t * 2) * .2 + boost * 1.6; bl.intensity = 1.6 + Math.sin(t * 2) * .3 + boost * 2.5;
