@@ -39,28 +39,34 @@
         const brooch = add(new T.OctahedronGeometry(.1), M(0x7fe6ff, { emissive: 0x2a9fd0, emissiveIntensity: 1, roughness: .1, metalness: .3 }), 0, 2.55, .62, tl);
 
         const head = new T.Group(); head.position.set(0, 3.24, .02); head.scale.setScalar(1.15); tl.add(head);
-        function face(blink) {
+        // mood: 0 ดวงดี (ยิ้มตาปิด), 1 กลาง ๆ, 2 ต้องระวัง (กังวล มีเหงื่อตก)
+        function face(blink, mood) {
             return tex(512, 256, g => {
                 g.fillStyle = '#ffe2d4'; g.fillRect(0, 0, 512, 256);
                 const cx = 128, ey = 130;
-                g.fillStyle = 'rgba(255,120,150,.35)'; [-1, 1].forEach(s => { g.beginPath(); g.ellipse(cx + s * 40, 154, 13, 7, 0, 0, 7); g.fill() });
+                g.fillStyle = `rgba(255,120,150,${[.6, .35, .15][mood]})`; [-1, 1].forEach(s => { g.beginPath(); g.ellipse(cx + s * 40, 154, 13, 7, 0, 0, 7); g.fill() });
                 [-1, 1].forEach(s => {
                     const x = cx + s * 27;
+                    if (mood == 0) { g.strokeStyle = '#2a1340'; g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); g.arc(x, ey + 6, 11, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke(); return }
+                    if (mood == 2) { g.strokeStyle = '#2a1340'; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(x - s * 9, ey - 24); g.lineTo(x + s * 9, ey - 19); g.stroke() }
                     if (blink) { g.strokeStyle = '#2a1340'; g.lineWidth = 3.5; g.beginPath(); g.arc(x, ey - 4, 11, .2 * Math.PI, .8 * Math.PI); g.stroke(); return }
                     g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x, ey, 11, 14, 0, 0, 7); g.fill();
                     const ir = g.createLinearGradient(0, ey - 13, 0, ey + 13); ir.addColorStop(0, '#3a1a80'); ir.addColorStop(.6, '#8a5ae0'); ir.addColorStop(1, '#ffd77a');
                     g.fillStyle = ir; g.beginPath(); g.ellipse(x + s * 1, ey + 1, 9, 12.5, 0, 0, 7); g.fill();
-                    g.fillStyle = '#1a0a30'; g.beginPath(); g.ellipse(x + s * 1, ey + 1, 4, 6, 0, 0, 7); g.fill();
+                    g.fillStyle = '#1a0a30'; g.beginPath(); g.ellipse(x + s * 1, ey + 1, mood == 2 ? 2.5 : 4, mood == 2 ? 4 : 6, 0, 0, 7); g.fill();
                     g.fillStyle = '#fff'; g.beginPath(); g.arc(x - 3, ey - 5, 3.4, 0, 7); g.fill(); g.beginPath(); g.arc(x + 3, ey + 5, 1.6, 0, 7); g.fill();
                     g.strokeStyle = '#2a1340'; g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); g.ellipse(x, ey + 1, 12, 15, 0, 1.12 * Math.PI, 1.9 * Math.PI); g.stroke();
                     g.lineWidth = 2.5; g.beginPath(); g.moveTo(x + s * 11, ey - 9); g.lineTo(x + s * 16, ey - 13); g.stroke()
                 });
-                g.strokeStyle = '#b8506a'; g.lineWidth = 2.5; g.lineCap = 'round'; g.beginPath(); g.arc(cx, 156, 6, .15 * Math.PI, .85 * Math.PI); g.stroke();
+                g.strokeStyle = '#b8506a'; g.lineWidth = 2.5; g.lineCap = 'round'; g.beginPath();
+                if (mood == 0) { g.moveTo(cx - 9, 152); g.quadraticCurveTo(cx, 168, cx + 9, 152); g.closePath(); g.fillStyle = '#c0485e'; g.fill(); g.fillStyle = '#ff8fa3'; g.beginPath(); g.ellipse(cx, 160, 4, 2.5, 0, 0, 7); g.fill() }
+                else if (mood == 2) { g.moveTo(cx - 8, 159); for (let i = 1; i <= 4; i++) g.lineTo(cx - 8 + i * 4, 159 + (i % 2 ? -2.5 : 0)); g.stroke(); g.fillStyle = '#5ab8ff'; g.strokeStyle = '#1f5f9e'; g.lineWidth = 2; g.beginPath(); g.moveTo(cx + 52, 132); g.quadraticCurveTo(cx + 62, 152, cx + 52, 158); g.quadraticCurveTo(cx + 42, 152, cx + 52, 132); g.fill(); g.stroke() }
+                else { g.arc(cx, 156, 6, .15 * Math.PI, .85 * Math.PI); g.stroke() }
                 g.fillStyle = '#e8b8a8'; g.fillRect(cx - .8, 143, 1.6, 3)
             })
         }
-        const fOpen = face(0), fShut = face(1);
-        const fm = new T.MeshStandardMaterial({ map: fOpen, emissive: 0xffffff, emissiveMap: fOpen, emissiveIntensity: .08, roughness: .75 });
+        const F = [0, 1, 2].map(m => [face(0, m), face(1, m)]); let mood = 1;
+        const fm = new T.MeshStandardMaterial({ map: F[1][0], emissive: 0xffffff, emissiveMap: F[1][0], emissiveIntensity: .08, roughness: .75 });
         const fc = add(new T.SphereGeometry(.5, 48, 32), fm, 0, 0, 0, head); fc.scale.set(.95, 1, .92);
         // ผม: ปอยผมแต่ละปอยเป็นท่อเรียวตามเส้นโค้ง ลงเงาแบบการ์ตูน (toon) ให้ดูเป็นอนิเมะ
         const tg = new T.DataTexture(new Uint8Array([45, 105, 170]), 3, 1, T.LuminanceFormat); tg.minFilter = tg.magFilter = T.NearestFilter; tg.needsUpdate = true;
@@ -126,7 +132,11 @@
         // กล้อง ตอบสนองเมาส์/การเอียงมือถือ และบินเข้าหาโต๊ะตอนเปิดม่าน
         const base = { z: 8.5, ly: 2.3 }; let mx = 0, cx = 0, boost = 0, intro = -1;
         window.tentFx = () => { boost = 1 };
+        window.tentMood = m => { mood = m };
         window.tentIntro = () => { intro = performance.now() };
+        // รูปแม่หมอวงกลมเล็กในหน้าคำทำนาย เรนเดอร์จากฉากเดียวกันด้วยกล้องที่จ่อหน้า
+        const ptc = document.getElementById('pt'), pr = ptc && new T.WebGLRenderer({ canvas: ptc, antialias: true }), pcam = new T.PerspectiveCamera(26, 1, .1, 20);
+        if (pr) { pr.shadowMap.enabled = r.shadowMap.enabled; pr.shadowMap.type = r.shadowMap.type; pr.setPixelRatio(Math.min(devicePixelRatio, 2)); pr.setSize(64, 64, false); pcam.position.set(0, 3.35, 2.4); pcam.lookAt(0, 3.1, -1.38) }
         addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5 });
         addEventListener('deviceorientation', e => { if (e.gamma != null) mx = Math.max(-.5, Math.min(.5, e.gamma / 60)) });
         function fit() { const w = innerWidth, h = innerHeight, a = w / h, p = Math.max(0, 1 - a); r.setSize(w, h, false); cam.aspect = a; cam.fov = 48 + p * 30; base.z = 8.5 + p * 3; base.ly = 3.1 + p * 1.1; cam.updateProjectionMatrix() }
@@ -134,20 +144,21 @@
         const t0 = performance.now(), io = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
         (function loop() {
             requestAnimationFrame(loop);
-            if (document.body.classList.contains('ovopen')) return;
             const now = performance.now(), t = (now - t0) / 1000; cx += (mx - cx) * .04; boost *= .985;
             const k = 1 - (intro < 0 ? 0 : io(Math.min(1, (now - intro) / 3200)));
             cam.position.set(cx * 1.6 + k * 1.2, 3.4 + k * 2.2, base.z + k * 5); cam.lookAt(0, base.ly + k * .6, .5);
-            tl.position.y = Math.sin(t * 1.2) * .03; head.rotation.y = cx * .7; head.rotation.z = Math.sin(t * .8) * .04;
+            tl.position.y = Math.sin(t * 1.2) * .03; head.rotation.y = cx * .7; head.rotation.z = Math.sin(t * .8) * .04 + (mood == 2 ? Math.sin(t * 9) * .015 : 0);
+            if (mood == 0) tl.position.y += Math.abs(Math.sin(t * 4)) * .04;
             sway.forEach(([m, a], i) => { m.rotation.z = Math.sin(t * 1.3 + i * .7) * a; m.rotation.x = Math.sin(t * .9 + i) * Math.abs(a) * .6 });
-            const shut = t % 4.2 < .13; if ((fm.map === fShut) !== shut) { fm.map = fm.emissiveMap = shut ? fShut : fOpen; fm.needsUpdate = true }
+            const fx = F[mood][t % 4.2 < .13 ? 1 : 0]; if (fm.map !== fx) { fm.map = fm.emissiveMap = fx; fm.needsUpdate = true }
             hands.forEach(([h, p], i) => h.position.set(p.x + Math.sin(t * 1.6 + i * 3) * .03, p.y + Math.sin(t * 2 + i) * .05, p.z));
             ball.material.emissiveIntensity = .8 + Math.sin(t * 2) * .2 + boost * 1.6; bl.intensity = 1.6 + Math.sin(t * 2) * .3 + boost * 2.5;
             core.rotation.set(t * .7, t * 1.1, 0); core.material.opacity = .5 + .3 * Math.sin(t * 3) + boost * .3;
             gem.material.emissiveIntensity = brooch.material.emissiveIntensity = 1 + Math.sin(t * 2.5) * .4 + boost * 2;
             fls.forEach(([f, l]) => { const q = .85 + Math.random() * .3; f.scale.set(q, 1.7 * q, q); l.intensity = 1.2 * q });
             pts.rotation.y = t * .03; pts.position.y = Math.sin(t * .5) * .1;
-            r.render(sc, cam)
+            if (!document.body.classList.contains('ovopen')) r.render(sc, cam);
+            else if (pr && ptc.offsetParent) pr.render(sc, pcam)
         })();
         document.body.classList.add('g3');
     } catch (e) { console.warn('3D ใช้ไม่ได้ ใช้ฉาก 2D แทน', e) }

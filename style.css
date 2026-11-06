@@ -923,6 +923,32 @@ body {
     font-size: clamp(1.3rem, 4vw, 1.8rem)
 }
 
+#rtalk {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px
+}
+
+#rtalk .hint {
+    margin: 0
+}
+
+#pt {
+    display: none;
+    width: 64px;
+    height: 64px;
+    flex: none;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 14px #b07cff88
+}
+
+body.g3 #pt {
+    display: block
+}
+
 #rzone {
     flex: 0 0 auto;
     padding: 22px 0 8px;

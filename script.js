@@ -73,7 +73,7 @@ function reset() {
   deck = sf([...C.keys()]); pick = []; zone.innerHTML = ''; $('#rzone').innerHTML = ''; $('#readv').classList.remove('rd'); rd.classList.add('hide'); scrollTo({ top: 0, behavior: 'smooth' });
   say(rnd(GREET), Object.entries(T).map(([k, v]) => [v[0], () => { topic = k; ask() }]))
 }
-function ask() { say(`${T[topic][1]} ว่าไว้… ต้องการเปิดไพ่กี่ใบ?`, [["1 ใบ · คำตอบสั้น", 1], ["2 ใบ · สถานการณ์และแนวทาง", 2], ["3 ใบ · อดีต ปัจจุบัน อนาคต", 3]].map(([l, n]) => [l, () => { N = n; shuffle(1) }]), reset) }
+function ask() { window.tentMood && tentMood(1); say(`${T[topic][1]} ว่าไว้… ต้องการเปิดไพ่กี่ใบ?`, [["1 ใบ · คำตอบสั้น", 1], ["2 ใบ · สถานการณ์และแนวทาง", 2], ["3 ใบ · อดีต ปัจจุบัน อนาคต", 3]].map(([l, n]) => [l, () => { N = n; shuffle(1) }]), reset) }
 function how(f) { say(f ? "ข้าสับไพ่ให้แล้ว… จะให้สับเพิ่ม หรือเจ้าจะตัดไพ่เอง? หรือวางไพ่ได้เลย" : "สับเรียบร้อย ต่อไปจะทำอย่างไรดี?", [["🔀 สับอีกครั้ง", () => shuffle()], ["✂️ ตัดไพ่", cut], ["🃏 วางไพ่เลย", spread]], () => { zone.innerHTML = ''; ask() }) }
 function shuffle(f) { window.tentFx && tentFx(); say(f ? "ข้าจะสับไพ่ให้ก่อน… ตั้งจิตนึกถึงเรื่องที่อยากรู้นะ" : "กำลังสับไพ่อีกรอบ…"); zone.innerHTML = '<div class="stack sh"></div>'; const s = zone.firstChild; for (let i = 0; i < 9; i++)s.append(card(0, 0, 0, 1)); deck = sf(deck); setTimeout(() => how(f), 3000) }
 function cut() {
@@ -108,6 +108,7 @@ $('#pback').onclick = () => { show('tent'); how(0) };
 $('#pgo').onclick = arrange; const hint = t => $('#rhint').textContent = t;
 $('#rnew').onclick = () => { reset(); show('tent') };
 function arrange() {
+  window.tentMood && tentMood(1);
   const cs = pick.map(c => ({ i: +c.querySelector('.fr').dataset.i, rev: c.querySelector('.fr').classList.contains('rv') }));
   const rz = $('#rzone'); rz.innerHTML = '<div class="row"></div>'; rd.classList.add('hide'); $('#readv').classList.remove('rd'); let n = 0;
   cs.forEach((x, k) => {
@@ -120,7 +121,7 @@ function arrange() {
 function reading(cs) {
   window.tentFx && tentFx(); let s = 0, h = `<h2>คำทำนาย · ${T[topic][1]}</h2>`;
   cs.forEach((x, k) => { const c = C[x.i]; s += c[2] * (x.rev ? -1 : 1); h += `<p><b>${PS()[N][k]} — ${c[1]} ${c[0]}${x.rev ? ' (ไพ่กลับหัว)' : ''}</b><br>${topic == 'aim' ? AIM[x.i][+x.rev] : (x.rev ? c[4] : c[3])}</p>` });
-  const t = s > 0 ? 0 : s < 0 ? 2 : 1, st = Math.round(3 + 2 * s / N);
+  const t = s > 0 ? 0 : s < 0 ? 2 : 1, st = Math.round(3 + 2 * s / N); window.tentMood && tentMood(t);
   h += `<p class="s">สรุป: ${rnd([V[topic][t], ...VX[topic][t]])}</p>`;
   h += `<div class="luck"><div><span>ระดับดวง</span><b class="stars">${'★'.repeat(st)}<i>${'★'.repeat(5 - st)}</i></b></div><div><span>สีมงคล</span><b>${rnd(LUCK_C)}</b></div><div><span>เลขนำโชค</span><b>${Math.random() * 10 | 0}${Math.random() * 10 | 0}</b></div><div><span>ไอเท็มเสริมดวง</span><b>${rnd(LUCK_I)}</b></div></div>`;
   h += `<p>🔮 <b>แม่หมอฝากไว้:</b> ${rnd(ADV[t])}</p><small>ไพ่ทาโร่ใช้เพื่อความบันเทิงและเป็นแรงบันดาลใจ ไม่ใช่คำตัดสินอนาคต</small>`;
