@@ -136,7 +136,7 @@
         window.tentIntro = () => { intro = performance.now() };
         // รูปแม่หมอวงกลมเล็กในหน้าคำทำนาย เรนเดอร์จากฉากเดียวกันด้วยกล้องที่จ่อหน้า
         const ptc = document.getElementById('pt'), pr = ptc && new T.WebGLRenderer({ canvas: ptc, antialias: true }), pcam = new T.PerspectiveCamera(26, 1, .1, 20);
-        if (pr) { pr.shadowMap.enabled = r.shadowMap.enabled; pr.shadowMap.type = r.shadowMap.type; pr.setPixelRatio(Math.min(devicePixelRatio, 2)); pr.setSize(64, 64, false); pcam.position.set(0, 3.35, 2.4); pcam.lookAt(0, 3.1, -1.38) }
+        if (pr) { pr.toneMapping = T.LinearToneMapping; pr.toneMappingExposure = .72; pr.shadowMap.enabled = r.shadowMap.enabled; pr.shadowMap.type = r.shadowMap.type; pr.setPixelRatio(Math.min(devicePixelRatio, 2)); pr.setSize(64, 64, false); pcam.position.set(0, 3.35, 2.4); pcam.lookAt(0, 3.1, -1.38) }
         addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5 });
         addEventListener('deviceorientation', e => { if (e.gamma != null) mx = Math.max(-.5, Math.min(.5, e.gamma / 60)) });
         function fit() { const w = innerWidth, h = innerHeight, a = w / h, p = Math.max(0, 1 - a); r.setSize(w, h, false); cam.aspect = a; cam.fov = 48 + p * 30; base.z = 8.5 + p * 3; base.ly = 3.1 + p * 1.1; cam.updateProjectionMatrix() }
