@@ -63,9 +63,20 @@ const POS = { 1: ["คำตอบ"], 2: ["สถานการณ์", "แน
 const PS = () => POSX[topic] || POS;
 let topic, N, deck, pick = [];
 const sf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]] } return a };
+// กล่องข้อความแบบเกม: พิมพ์ทีละตัวอักษร แตะกล่องเพื่อข้าม ตัวเลือกโผล่หลังพิมพ์จบ
+const GS = window.Intl && Intl.Segmenter ? new Intl.Segmenter('th', { granularity: 'grapheme' }) : null;
+let typing;
 function say(t, o = [], back) {
-  b.innerHTML = "<p>" + t + "</p>"; o.forEach(([l, f]) => { const x = document.createElement('button'); x.textContent = l; x.onclick = f; b.append(x) });
-  if (back) { b.append(document.createElement('br')); const x = document.createElement('button'); x.className = 'back'; x.textContent = '← ย้อนกลับ'; x.onclick = back; b.append(x) }
+  clearInterval(typing); b.classList.remove('done');
+  b.innerHTML = '<p aria-hidden="true"></p><span class="sr"></span><div class="ch"></div>';
+  const p = b.firstChild, ch = b.lastChild; b.children[1].textContent = t;
+  if (back) o = [...o, ['← ย้อนกลับ', back, 'back']];
+  o.forEach(([l, f, cls], i) => { const x = document.createElement('button'); x.textContent = l; x.onclick = f; x.style.setProperty('--i', i); if (cls) x.className = cls; ch.append(x) });
+  const g = GS ? [...GS.segment(t)].map(s => s.segment) : Array.from(t); let i = 0;
+  const end = () => { clearInterval(typing); p.textContent = t; b.classList.add('done') };
+  b.onclick = e => { if (!b.classList.contains('done') && !e.target.closest('button')) end() };
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return end();
+  typing = setInterval(() => { p.textContent = g.slice(0, ++i).join(''); if (i >= g.length) end() }, 26)
 }
 const stack = () => { zone.innerHTML = '<div class="stack"></div>'; for (let i = 0; i < 9; i++)zone.firstChild.append(card(0, 0, 0, 1)) };
 function card(i, rev, face, lite) { const d = document.createElement('div'); d.className = 'c' + (face ? ' flip' : ''); const c = C[i]; d.innerHTML = `<div class="in"><div class="bk"></div><div class="fr${rev ? ' rv' : ''}" data-i="${i}">${lite ? '' : `<img src="${IMG[i]}" alt="${c[0]}">`}</div></div>`; return d }

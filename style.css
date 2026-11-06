@@ -80,55 +80,134 @@ body {
 #bubble {
     position: relative;
     flex: 0 0 auto;
-    margin: 18px 12px 0;
-    max-width: 560px;
+    margin: 30px 12px 0;
+    max-width: 580px;
     width: calc(100% - 24px);
-    background: #fff8e8;
-    color: #2b1638;
-    border: 3px solid var(--gold);
-    border-radius: 18px;
-    padding: 14px 16px;
-    text-align: center;
-    box-shadow: 0 6px 0 #0005;
+    background: linear-gradient(#24104acc, #120724e6);
+    color: #fff3dc;
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    outline: 1px solid #f2c66d66;
+    outline-offset: -7px;
+    padding: 20px 18px 16px;
+    box-shadow: 0 0 0 3px #12061f, 0 10px 30px #000b, inset 0 0 26px #b07cff33;
+    backdrop-filter: blur(4px);
+    cursor: default;
     animation: pop .35s
 }
 
 #bubble:before {
-    content: "";
+    content: "✦ แม่หมอ";
     position: absolute;
-    left: 50%;
-    top: -16px;
-    margin-left: -12px;
-    border: 12px solid transparent;
-    border-top: 0;
-    border-bottom-color: var(--gold)
+    left: 16px;
+    top: -15px;
+    padding: 3px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .9rem;
+    color: #3a1408;
+    background: linear-gradient(#ffe7a0, #e0a83a);
+    border: 2px solid #fff0b0;
+    box-shadow: 0 3px 0 #7a4a10
+}
+
+#bubble:after {
+    content: "▼";
+    position: absolute;
+    right: 16px;
+    bottom: 6px;
+    font-size: .7rem;
+    color: var(--gold);
+    opacity: 0;
+    animation: nudge .8s ease-in-out infinite alternate
+}
+
+#bubble.done:not(:has(.ch button)):after {
+    opacity: 1
+}
+
+@keyframes nudge {
+    to {
+        translate: 0 3px
+    }
 }
 
 #bubble p {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
+    min-height: 1.5em;
     font-size: clamp(.95rem, 2.4vw + .4rem, 1.2rem);
-    line-height: 1.5
+    line-height: 1.5;
+    text-shadow: 0 2px 0 #0008
+}
+
+#bubble .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%)
+}
+
+#bubble .ch {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 6px
+}
+
+#bubble:not(.done) .ch {
+    visibility: hidden
+}
+
+#bubble.done .ch button {
+    animation: slot .25s both;
+    animation-delay: calc(var(--i) * 35ms)
+}
+
+@keyframes slot {
+    from {
+        opacity: 0;
+        translate: -8px 0
+    }
 }
 
 #bubble button {
+    position: relative;
     font: inherit;
-    margin: 4px;
-    padding: 9px clamp(10px, 3vw, 18px);
+    text-align: left;
+    padding: 8px 10px 8px 24px;
     min-height: 40px;
-    border-radius: 999px;
-    border: 2px solid var(--plum);
-    background: #fff;
-    color: var(--plum);
+    border-radius: 6px;
+    border: 1px solid #f2c66d55;
+    background: #ffffff0d;
+    color: #f4e6ff;
     cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s
+}
+
+#bubble button:before {
+    content: "▶";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    translate: -4px -50%;
+    font-size: .7em;
+    color: var(--gold);
+    opacity: 0;
     transition: .15s
 }
 
 #bubble button:hover,
 #bubble button:focus-visible {
-    background: var(--plum);
+    background: linear-gradient(90deg, #f2c66d40, #f2c66d10);
+    border-color: var(--gold);
     color: #fff;
-    outline: 0;
-    transform: translateY(-2px)
+    outline: 0
+}
+
+#bubble button:hover:before,
+#bubble button:focus-visible:before {
+    opacity: 1;
+    translate: 0 -50%
 }
 
 @keyframes pop {
@@ -1003,13 +1082,12 @@ body.g3 #scene {
 }
 
 body.g3 #scene:before,
-body.g3 #teller,
-body.g3 #bubble:before {
+body.g3 #teller {
     display: none
 }
 
 body.g3 #bubble {
-    margin-top: 66px
+    margin-top: 76px
 }
 
 body.g3 #table {
@@ -1052,19 +1130,12 @@ body.cur3d.cfade #cc {
 }
 
 #bubble button.back {
-    background: transparent;
-    border: 2px dashed #b9a4d6;
-    color: #7a5a8a;
+    grid-column: 1 / -1;
+    justify-self: start;
     min-height: 34px;
-    margin-top: 6px;
+    border-style: dashed;
+    color: #cdb8ff;
     font-size: .9em
-}
-
-#bubble button.back:hover,
-#bubble button.back:focus-visible {
-    background: #7a5a8a;
-    color: #fff;
-    border-style: solid
 }
 
 #cfil {
